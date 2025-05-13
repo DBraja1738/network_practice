@@ -7,13 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:network_practice/chat.dart';
 import 'package:network_practice/main.dart';
+import 'package:network_practice/menu.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(ChatApp());
+    await tester.pumpWidget(MainApp());
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
