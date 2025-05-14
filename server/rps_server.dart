@@ -10,7 +10,7 @@ class Player{
 void main() async{
   final players = <Player>[];
 
-  final server = await HttpServer.bind("0.0.0.0", 1234);
+  final server = await HttpServer.bind(InternetAddress.anyIPv4, 1234);
   print("server running on ws://${server.address.address}:1234");
 
   await for(HttpRequest request in server){
@@ -65,5 +65,5 @@ String _determineWinner(String? m1, String? m2){
 
 String _reverseResult(String result){
   if(result=="Draw") return "Draw";
-  return result == "You win" ? "You win" : "You lose";
+  return result == "You win" ? "You lose" : "You win";
 }

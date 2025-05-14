@@ -35,12 +35,14 @@ class _RPSAppState extends State<RPSApp> {
 
     @override
     void dispose() {
+      
       client.dispose();
       super.dispose();
     }
   }
   void sendMove(String move){
     client.sendMove(move);
+
     setState(() {
       status = "move is chosen, waiting for opp...";
     });

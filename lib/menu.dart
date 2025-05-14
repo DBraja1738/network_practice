@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:network_practice/animations.dart';
 import 'package:network_practice/chat.dart';
+import 'package:network_practice/enterip.dart';
 import 'widgets/decorations.dart';
-import 'rockpaperscizors.dart';
+
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
@@ -15,7 +17,6 @@ class MainApp extends StatelessWidget {
 
 class MainMenu extends StatelessWidget {
   const MainMenu({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,9 +44,17 @@ class MainMenu extends StatelessWidget {
 
                   TextButton(
                   onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> RPSApp(serverURL: 'ws://localhost:1234',)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> IPinput()));
                   },style: AppDecorations.buttonStyle,
                   child: const Text("hello rps")),
+
+                  const SizedBox(height: 50.0,),
+
+                  TextButton(
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> AnimationPractice()));
+                      },style: AppDecorations.buttonStyle,
+                      child: const Text("hello animations")),
                 ],
               ),
               ),
