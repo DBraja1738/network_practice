@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:network_practice/animations.dart';
 import 'package:network_practice/chat.dart';
+import 'package:network_practice/enterIPchat.dart';
 import 'package:network_practice/enterip.dart';
 import 'widgets/decorations.dart';
 
@@ -36,7 +37,7 @@ class MainMenu extends StatelessWidget {
                 children: [
                   TextButton(
                   onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatApp()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> IPinputChat()));
                   }, style: AppDecorations.buttonStyle,
                     child: const Text("hello chat"),),
 

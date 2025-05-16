@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:network_practice/rockpaperscizors.dart';
+import 'package:network_practice/chat.dart';
+import 'chatClient.dart';
+import 'chatScreen.dart';
 import 'widgets/decorations.dart';
 import 'dart:io';
-class IPinput extends StatefulWidget {
-  const IPinput({super.key});
+class IPinputChat extends StatefulWidget {
+  const IPinputChat({super.key});
 
 
   @override
-  State<IPinput> createState() => _IPinputState();
+  State<IPinputChat> createState() => _IPinputChatState();
 }
 
-class _IPinputState extends State<IPinput> {
+class _IPinputChatState extends State<IPinputChat> {
   final TextEditingController controller = TextEditingController();
   String status= "status";
   @override
@@ -32,7 +34,7 @@ class _IPinputState extends State<IPinput> {
       ),
     );
   }
-  
+
   Future<bool> checkServerReachable() async {
     try{
       final socket= await Socket.connect("${controller.text}", 1234, timeout: Duration(seconds: 2));
@@ -44,7 +46,15 @@ class _IPinputState extends State<IPinput> {
   }
   Future<void> connectToServer() async {
     if(await checkServerReachable()){
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> RPSApp(serverURL: controller.text)));
+      final ip=controller.text.trim();
+      final url="ws://localhost:1234";
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChatScreenRooms(client: ChatClient(url)),
+        ),
+      );
+
     }else{
       status="failed connection";
       setState(() {
