@@ -2,15 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:network_practice/chatAndRooms.dart';
+import 'package:network_practice/roomScreen.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'widgets/decorations.dart';
-class EnterIpChat extends StatefulWidget {
-  const EnterIpChat({super.key});
+class EnterIpRooms extends StatefulWidget {
+  const EnterIpRooms({super.key});
 
   @override
-  State<EnterIpChat> createState() => _EnterIpChatState();
+  State<EnterIpRooms> createState() => _EnterIpRoomsState();
 }
 
-class _EnterIpChatState extends State<EnterIpChat> {
+class _EnterIpRoomsState extends State<EnterIpRooms> {
   final TextEditingController controller = TextEditingController();
   String status = "status";
   @override
@@ -43,7 +45,8 @@ class _EnterIpChatState extends State<EnterIpChat> {
   }
   Future<void> connectToServer() async {
     if(await checkServerReachable()){
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> Chatandrooms(ip: "ws://${controller.text}:1234")));
+      final channel = WebSocketChannel.connect(Uri.parse("ws://${controller.text.trim()}:1234"));
+      Navigator.push(context, MaterialPageRoute(builder: (context)=> RoomScreen(channel: channel)));
     }else{
       status="failed connection";
       setState(() {

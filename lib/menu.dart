@@ -3,6 +3,7 @@ import 'package:network_practice/animations.dart';
 import 'package:network_practice/chat.dart';
 import 'package:network_practice/enterIPchat.dart';
 import 'package:network_practice/enterip.dart';
+import 'IPinputRooms.dart';
 import 'widgets/decorations.dart';
 
 class MainApp extends StatelessWidget {
@@ -37,9 +38,16 @@ class MainMenu extends StatelessWidget {
                 children: [
                   TextButton(
                   onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> IPinputChat()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> EnterIpChat()));
                   }, style: AppDecorations.buttonStyle,
                     child: const Text("hello chat"),),
+
+                  const SizedBox(height: 50.0,),
+                  TextButton(
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> EnterIpRooms()));
+                      },style: AppDecorations.buttonStyle,
+                      child: const Text("hello all rooms")),
 
                   const SizedBox(height: 50.0,),
 

@@ -1,47 +1,86 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RoomScreen extends StatefulWidget {
-  final void Function(String roomName) onRoomJoined;
+  final WebSocketChannel channel;
 
-  const RoomScreen({required this.onRoomJoined, super.key});
+  const RoomScreen({super.key, required this.channel});
 
   @override
   State<RoomScreen> createState() => _RoomScreenState();
 }
 
 class _RoomScreenState extends State<RoomScreen> {
+  List<dynamic> rooms = [];
+  bool isLoading = true;
   final TextEditingController _controller = TextEditingController();
 
-  void _joinRoom() {
-    final roomName = _controller.text.trim();
-    if (roomName.isNotEmpty) {
-      widget.onRoomJoined(roomName);
-    }
+  @override
+  void initState(){
+    super.initState();
+
+    widget.channel.stream.listen((message){
+      final data = jsonDecode(message);
+
+      if(data["type"] == "rooms_list"){
+        setState(() {
+          rooms = data["rooms"];
+          isLoading = false;
+        });
+      }else if(data["type"] == "status"){
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['message']))
+        );
+      }
+    });
+    Future.delayed(Duration(milliseconds: 700),(){
+      fetchRooms();
+    });
+
+  }
+
+  void fetchRooms(){
+    widget.channel.sink.add(jsonEncode({
+      "type": "fetch_rooms",
+    }));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Join or Create Room')),
+      appBar: AppBar(title: Text('Hello rooms')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: _controller,
-              decoration: InputDecoration(
-                labelText: 'Room Name',
-                border: OutlineInputBorder(),
-              ),
+            Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : rooms.isEmpty ? const Center(child: Text("No rooms"),)
+                    : ListView.builder(
+                        itemCount: rooms.length,
+                        itemBuilder: (context, index){
+                          final room= rooms[index];
+                          return ListTile(
+                            title: Text(room["name"]),
+
+                          );
+                        }
+                      )
             ),
             SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _joinRoom,
-              child: Text('Enter Room'),
-            ),
           ],
         ),
       ),
     );
+  }
+  @override
+  void dispose(){
+    _controller.dispose();
+    widget.channel.sink.close();
+    super.dispose();
+
   }
 }
