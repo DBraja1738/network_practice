@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:network_practice/chatScreen.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RoomScreen extends StatefulWidget {
@@ -41,6 +42,15 @@ class _RoomScreenState extends State<RoomScreen> {
 
   }
 
+  void joinRoom(String roomName){
+    widget.channel.sink.add(jsonEncode({
+      "type" : "join",
+      "room" : roomName,
+    }));
+
+    Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatScreenNew(channel: widget.channel, roomName: roomName)));
+  }
+
   void fetchRooms(){
     widget.channel.sink.add(jsonEncode({
       "type": "fetch_rooms",
@@ -65,7 +75,10 @@ class _RoomScreenState extends State<RoomScreen> {
                           final room= rooms[index];
                           return ListTile(
                             title: Text(room["name"]),
-
+                            subtitle: Text("${room["occupancy"] / room["capacity"]} participants"),
+                            trailing: room["occupancy"] < room["capacity"]
+                                      ? ElevatedButton(onPressed: ()=> joinRoom(room["name"]), child: const Text("Join"))
+                                      : const Text("FULL", style: TextStyle(color: Colors.red),)
                           );
                         }
                       )
