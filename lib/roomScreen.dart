@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -17,12 +18,26 @@ class _RoomScreenState extends State<RoomScreen> {
   List<dynamic> rooms = [];
   bool isLoading = true;
   final TextEditingController _controller = TextEditingController();
+  StreamSubscription? subscription;
+
 
   @override
   void initState(){
     super.initState();
 
-    widget.channel.stream.listen((message){
+    setupListener();
+
+    Future.delayed(Duration(milliseconds: 700),(){
+      fetchRooms();
+    });
+
+  }
+
+  void setupListener(){
+
+    if(subscription != null) return;
+
+    subscription = widget.channel.stream.listen((message){
       final data = jsonDecode(message);
 
       if(data["type"] == "rooms_list"){
@@ -35,12 +50,25 @@ class _RoomScreenState extends State<RoomScreen> {
             SnackBar(content: Text(data['message']))
         );
       }
-    });
-    Future.delayed(Duration(milliseconds: 700),(){
-      fetchRooms();
-    });
+    },
+    onError: (error){
+      print("error: $error");
 
+      setState(() {
+        isLoading = false;
+      });
+    },
+    onDone: (){
+      print("Websocket closed");
+
+      if(mounted){
+        Navigator.of(context).pop();
+      }
+    }
+
+    );
   }
+
 
   void joinRoom(String roomName){
     widget.channel.sink.add(jsonEncode({
@@ -48,7 +76,22 @@ class _RoomScreenState extends State<RoomScreen> {
       "room" : roomName,
     }));
 
-    Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatScreenNew(channel: widget.channel, roomName: roomName)));
+    subscription?.cancel();
+    subscription = null;
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context)=> ChatScreenNew(
+                channel: widget.channel,
+                roomName: roomName
+            )
+        )
+    ).then((_){
+
+      setupListener();
+      fetchRooms();
+    });
   }
 
   void fetchRooms(){
@@ -92,7 +135,7 @@ class _RoomScreenState extends State<RoomScreen> {
   @override
   void dispose(){
     _controller.dispose();
-    widget.channel.sink.close();
+    subscription?.cancel();
     super.dispose();
 
   }

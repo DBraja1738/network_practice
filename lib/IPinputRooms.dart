@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:network_practice/chatAndRooms.dart';
 import 'package:network_practice/roomScreen.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'widgets/decorations.dart';
 class EnterIpRooms extends StatefulWidget {
@@ -43,10 +44,30 @@ class _EnterIpRoomsState extends State<EnterIpRooms> {
       return false;
     }
   }
+
   Future<void> connectToServer() async {
     if(await checkServerReachable()){
-      final channel = WebSocketChannel.connect(Uri.parse("ws://${controller.text.trim()}:1234"));
-      Navigator.push(context, MaterialPageRoute(builder: (context)=> RoomScreen(channel: channel)));
+      try{
+        setState(() {
+          status = "connecting to server..";
+        });
+
+        final wsUrl = "ws://${controller.text.trim()}:1234";
+
+        final wsUri = Uri.parse(wsUrl);
+        final channel = IOWebSocketChannel.connect(wsUri);
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => RoomScreen(channel: channel))
+        );
+      }catch(e){
+        setState(() {
+          status = "error $e";
+        });
+      }
+
+
     }else{
       status="failed connection";
       setState(() {

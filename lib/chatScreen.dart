@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -25,35 +26,38 @@ class ChatMessage{
 class _ChatScreenNewState extends State<ChatScreenNew> {
   List<ChatMessage> messages = [];
   final TextEditingController controller = TextEditingController();
+  late StreamSubscription subscription;
 
   @override
   void initState(){
     super.initState();
-    
-    widget.channel.stream.listen((data){
+
+    subscription = widget.channel.stream.listen((data){
       final messageData = jsonDecode(data);
 
       if(messageData["type"]=="message"){
         setState(() {
           messages.add(ChatMessage(
-              sender: messageData["user"] ?? "Unknown",
-              text: messageData["text"] ?? "",
+            sender: messageData["from"] ?? "Unknown",
+            text: messageData["text"] ?? "",
           ));
         });
       }else if(messageData["type"]=="status"){
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(messageData["text"] ?? "")));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(messageData["message"] ?? "")));
       }
     },
-      onDone: (){
-        if(mounted){
-          Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Connection closed"))
-          );
+        onDone: (){
+          if(mounted){
+            Navigator.of(context).pop();
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Connection closed"))
+            );
+          }
         }
-      }
 
     );
+
+
   }
 
   void sendMessage(){
@@ -72,7 +76,12 @@ class _ChatScreenNewState extends State<ChatScreenNew> {
       controller.clear();
     }
   }
-  
+  @override
+  void dispose(){
+    subscription.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,7 +99,22 @@ class _ChatScreenNewState extends State<ChatScreenNew> {
                     );
                   }
                 )
-          )
+          ),
+
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Expanded(child: TextField(controller: controller, onSubmitted: (_) => sendMessage,))
+                ],
+              ),
+          ),
+          SizedBox(width: 8),
+          ElevatedButton(
+            onPressed: sendMessage,
+            child: Text('Send'),
+          ),
+
         ],
       ),
     );
