@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'classes/tcpSing.dart';
+import 'classes/tcpSink.dart';
 
 // Simplified RoomScreen - no subscription management needed
 class RoomScreen extends StatefulWidget {

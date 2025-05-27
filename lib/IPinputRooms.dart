@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:network_practice/roomScreen.dart';
-import 'classes/tcpSing.dart';
+import 'classes/tcpSink.dart';
 class EnterIpRooms extends StatefulWidget {
   const EnterIpRooms({super.key});
 
