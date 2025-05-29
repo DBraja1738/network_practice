@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'classes/tcpSink.dart';
 
-// Simplified RoomScreen - no subscription management needed
 class RoomScreen extends StatefulWidget {
   final TCPChannel channel;
 
@@ -20,7 +19,6 @@ class _RoomScreenState extends State<RoomScreen> {
   void initState() {
     super.initState();
 
-    // Just listen directly - no subscription tracking needed!
     widget.channel.stream.listen((message) {
       final data = jsonDecode(message);
 
@@ -36,12 +34,12 @@ class _RoomScreenState extends State<RoomScreen> {
           );
         }
       } else if (data["type"] == "room_created") {
-        // Auto-refresh when new room is created
+
         fetchRooms();
       }
     });
 
-    // Initial fetch
+
     fetchRooms();
   }
 
@@ -57,17 +55,17 @@ class _RoomScreenState extends State<RoomScreen> {
       "room": roomName,
     }));
 
-    // Navigate to chat - no need to cancel anything
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatScreenSimplified(
+        builder: (context) => ChatScreen(
           channel: widget.channel,
           roomName: roomName,
         ),
       ),
     ).then((_) {
-      // Refresh rooms when returning
+      // Refresh
       fetchRooms();
     });
   }
@@ -182,22 +180,21 @@ class _RoomScreenState extends State<RoomScreen> {
   }
 }
 
-// Simplified ChatScreen - no subscription management needed
-class ChatScreenSimplified extends StatefulWidget {
+class ChatScreen extends StatefulWidget {
   final String roomName;
   final TCPChannel channel;
 
-  const ChatScreenSimplified({
+  const ChatScreen({
     required this.channel,
     required this.roomName,
     super.key,
   });
 
   @override
-  State<ChatScreenSimplified> createState() => _ChatScreenSimplifiedState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenSimplifiedState extends State<ChatScreenSimplified> {
+class _ChatScreenState extends State<ChatScreen> {
   List<ChatMessage> messages = [];
   final TextEditingController controller = TextEditingController();
   final ScrollController scrollController = ScrollController();
@@ -206,7 +203,7 @@ class _ChatScreenSimplifiedState extends State<ChatScreenSimplified> {
   void initState() {
     super.initState();
 
-    // Just listen directly - both screens can listen simultaneously!
+
     widget.channel.stream.listen((data) {
       final messageData = jsonDecode(data);
 
@@ -219,7 +216,7 @@ class _ChatScreenSimplifiedState extends State<ChatScreenSimplified> {
           ));
         });
 
-        // Auto-scroll to bottom
+
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (scrollController.hasClients) {
             scrollController.animateTo(
@@ -264,6 +261,7 @@ class _ChatScreenSimplifiedState extends State<ChatScreenSimplified> {
 
   @override
   void dispose() {
+
     controller.dispose();
     scrollController.dispose();
     super.dispose();

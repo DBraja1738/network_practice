@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 
-// TCP Client wrapper that mimics WebSocketChannel interface
 class TCPChannel {
   Socket? _socket;
   final StreamController<dynamic> _streamController = StreamController.broadcast();
@@ -30,7 +29,7 @@ class TCPChannel {
       }
     });
 
-    // Listen to socket and forward to stream
+
     _socket!.listen(
           (data) {
         _buffer.write(utf8.decode(data));
