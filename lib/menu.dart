@@ -4,6 +4,7 @@ import 'package:network_practice/chat.dart';
 import 'package:network_practice/enterIPchat.dart';
 import 'package:network_practice/enterip.dart';
 import 'package:network_practice/ipInputRpsRooms.dart';
+import 'package:network_practice/turtleAnimation.dart';
 import 'IPinputRooms.dart';
 import 'widgets/decorations.dart';
 
@@ -73,6 +74,14 @@ class MainMenu extends StatelessWidget {
                         Navigator.push(context, MaterialPageRoute(builder: (context)=> Ipinputrpsrooms()));
                       },style: AppDecorations.buttonStyle,
                       child: const Text("hello tcp rps")),
+
+                  const SizedBox(height: 50.0,),
+
+                  TextButton(
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> TurtleAnimation()));
+                      },style: AppDecorations.buttonStyle,
+                      child: const Text("hello turtle animation")),
 
 
                 ],
